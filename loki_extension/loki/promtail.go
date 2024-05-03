@@ -40,17 +40,18 @@ func init() {
 		sendLabels = append(labels, fmt.Sprintf("%s = %s", key, val))
 	}
 
-	lokiIp := os.Getenv("LOKI_IP")
+	lokiIp := os.Getenv("LOKI_URL")
 	if len(lokiIp) == 0 {
 		panic("LOKI Ip undefined")
 	}
+
 	conf = promtail.ClientConfig{
 		PushURL:            fmt.Sprintf("%s/api/v1/push", lokiIp),
 		Labels:             fmt.Sprintf("{%s}", strings.Join(labels, ",")),
 		BatchWait:          5 * time.Second,
 		BatchEntriesNumber: 10000,
-		SendLevel:          promtail.INFO,
-		PrintLevel:         promtail.ERROR,
+		SendLevel:          promtail.DEBUG,
+		PrintLevel:         promtail.DEBUG,
 	}
 	loki, err = promtail.NewClientProto(conf)
 	if err != nil {
@@ -61,6 +62,8 @@ func init() {
 
 func LokiSend(record *string) {
 	tstamp := time.Now().String()
+	loki.Infof("tomhayn hello")
+	loki.Infof("%s", conf.PushURL)
 	loki.Infof("%s, time = %s, record = %v\n", strings.Join(sendLabels, ", "), tstamp, *record)
 }
 

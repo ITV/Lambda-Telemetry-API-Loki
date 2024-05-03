@@ -5,7 +5,7 @@ Based on the example in https://github.com/aws-samples/aws-lambda-extensions/tre
 This proof-of-concept code is not production ready. Use it with your own discretion after testing thoroughly.
 
 
-This sample extension: 
+This sample extension:
 1. Registers the extension with Lambda Extensions API (see `extensionApi/client.go`)
 2. Starts a local HTTP server to receive incoming telemetry events from the Telemetry API (see `telemetryApi/listener.go`)
 3. Subscribes to the Telemetry API to start receiving incoming telemetry events (see `telemetryApi/client.go`)
@@ -30,6 +30,6 @@ Note the ARN and use it as the Lambda Layer.
 
 Configure the extension by setting below environment variables
 
-* `LOKI_IP` - the IP of the loki server. This poc runs *without* authentocation.
-* `DISPATCH_MIN_BATCH_SIZE` - optimize dispatching telemetry by telling the dispatcher how many log events you want it to batch. On function invoke the telemetry will be dispatched only if number of log events collected so far is greater than `DISPATCH_MIN_BATCH_SIZE`. On function shutdown the telemetry will be dispatched  regardless of how many log events were collected so far. 
+* `LOKI_URL` - the URL of the loki server. This poc runs *without* authentocation.
+* `DISPATCH_MIN_BATCH_SIZE` - optimize dispatching telemetry by telling the dispatcher how many log events you want it to batch. On function invoke the telemetry will be dispatched only if number of log events collected so far is greater than `DISPATCH_MIN_BATCH_SIZE`. On function shutdown the telemetry will be dispatched  regardless of how many log events were collected so far.
 

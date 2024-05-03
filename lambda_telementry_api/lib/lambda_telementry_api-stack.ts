@@ -13,18 +13,18 @@ import { join } from 'path';
 export class LambdaTelementryApiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    const account=this.account    
-    const region=this.region    
-    
+    const account = this.account
+    const region = this.region
+
     const extensionName = "grafana-loki-extension"
-    const layerVersion="1"
-    const loki_ip="3.67.195.192"
+    const layerVersion = "1"
+    const LOKI_URL = "3.67.195.192"
     const distpatch_min_batch_size = "10"
-    
-    const lambdatelematryApiLayerArn = "arn:aws:lambda:"+region+":"+account+":layer:"+extensionName+":"+layerVersion
+
+    const lambdatelematryApiLayerArn = "arn:aws:lambda:" + region + ":" + account + ":layer:" + extensionName + ":" + layerVersion
     const ltaLayer = lambda.LayerVersion.fromLayerVersionArn(this, "ltalayer", lambdatelematryApiLayerArn)
 
-    let functions= [];
+    let functions = [];
 
     // GO **********
     const fnGO = new lambda.Function(this, 'telemetry-api-starter-go', {
@@ -117,7 +117,7 @@ export class LambdaTelementryApiStack extends cdk.Stack {
       functions[i].addEnvironment("Bucket", bucky.bucketName)
       functions[i].addEnvironment("TableName", table.tableName)
       functions[i].addEnvironment("DISPATCH_MIN_BATCH_SIZE", distpatch_min_batch_size)
-      functions[i].addEnvironment("LOKI_IP", loki_ip)
+      functions[i].addEnvironment("LOKI_URL", LOKI_URL)
       bucky.grantRead(functions[i])
       table.grantReadWriteData(functions[i]);
       topic.addSubscription(new subscriptions.LambdaSubscription(functions[i]));
