@@ -21,6 +21,7 @@ var (
 	conf       promtail.ClientConfig
 	labels     []string
 	sendLabels []string
+	cpLabels   []string
 	err        error
 )
 
@@ -29,6 +30,19 @@ func init() {
 	labels = []string{"source=\"lambda\""}
 	sendLabels = []string{"source = lambda"}
 
+	// CP Standard Labels
+	// product := os.Getenv("PRODUCT")     - minimise labels: arguably redundant
+	// ecosystem := os.Getenv("ECOSYSTEM") - minimise labels: arguably redundant
+	environment := os.Getenv("ENVIRONMENT")
+	service := os.Getenv("SERVICE")
+	component := os.Getenv("COMPONENT")
+
+	cpLabels = []string{
+		fmt.Sprintf("environment=\"%s\"", environment),
+		fmt.Sprintf("service=\"%s\"", service),
+		fmt.Sprintf("component=\"%s\"", component),
+		fmt.Sprintf("job=\"%s-%s\"", service, component),
+	}
 	for _, element := range os.Environ() {
 		if !strings.HasPrefix(element, "OTEL_LABEL_") {
 			continue
@@ -39,6 +53,7 @@ func init() {
 		labels = append(labels, fmt.Sprintf("%s=\"%s\"", key, val))
 		sendLabels = append(labels, fmt.Sprintf("%s = %s", key, val))
 	}
+	labels = append(labels, cpLabels...)
 
 	lokiIp := os.Getenv("LOKI_URL")
 	if len(lokiIp) == 0 {
@@ -50,8 +65,8 @@ func init() {
 		Labels:             fmt.Sprintf("{%s}", strings.Join(labels, ",")),
 		BatchWait:          5 * time.Second,
 		BatchEntriesNumber: 10000,
-		SendLevel:          promtail.DEBUG,
-		PrintLevel:         promtail.DEBUG,
+		SendLevel:          promtail.INFO,
+		PrintLevel:         promtail.ERROR,
 	}
 	loki, err = promtail.NewClientProto(conf)
 	if err != nil {
@@ -62,9 +77,7 @@ func init() {
 
 func LokiSend(record *string) {
 	tstamp := time.Now().String()
-	loki.Infof("tomhayn hello")
-	loki.Infof("%s", conf.PushURL)
-	loki.Infof("%s, time = %s, record = %v\n", strings.Join(sendLabels, ", "), tstamp, *record)
+	loki.Infof("{\"@timestamp\": \"%s\", \"message\": \"%v\"}", tstamp, strings.TrimSuffix(*record, "\n"))
 }
 
 func LokiShutdown() {
