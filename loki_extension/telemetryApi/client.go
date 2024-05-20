@@ -12,6 +12,7 @@ import (
 
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -34,18 +35,6 @@ func NewClient() *Client {
 		baseUrl:    baseUrl,
 	}
 }
-
-// Represents the type of log events in Lambda
-type EventType string
-
-const (
-	// Used to receive log events emitted by the platform
-	Platform EventType = "platform"
-	// Used to receive log events emitted by the function
-	Function EventType = "function"
-	// Used is to receive log events emitted by the extension
-	Extension EventType = "extension"
-)
 
 // Configuration for receiving telemetry from the Telemetry API.
 // Telemetry will be sent to your listener when one of the conditions below is met.
@@ -103,7 +92,7 @@ const (
 // Request body that is sent to the Telemetry API on subscribe
 type SubscribeRequest struct {
 	SchemaVersion SchemaVersion `json:"schemaVersion"`
-	EventTypes    []EventType   `json:"types"`
+	EventTypes    []string      `json:"types"`
 	BufferingCfg  BufferingCfg  `json:"buffering"`
 	Destination   Destination   `json:"destination"`
 }
@@ -115,12 +104,12 @@ type SubscribeResponse struct {
 
 // Subscribes to the Telemetry API to start receiving the log events
 func (c *Client) Subscribe(ctx context.Context, extensionId string, listenerUri string) (*SubscribeResponse, error) {
-	// Log entries from this extension only are given it sbscribed to "Extension"
-	eventTypes := []EventType{
-		//Platform,
-		Function,
-		//Extension,
+	logStreams := os.Getenv("LOGSTREAMS")
+	if len(logStreams) == 0 {
+		panic("LOGSTREAMS envVar unset - set to comma-delimited list i.e. platform,function")
 	}
+	// Log entries from this extension only are given if subscribed to "Extension"
+	eventTypes := strings.Split(logStreams, ",")
 
 	bufferingConfig := BufferingCfg{
 		MaxItems:  1000,
