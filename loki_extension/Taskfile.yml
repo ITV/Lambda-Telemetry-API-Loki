@@ -14,7 +14,12 @@ tasks:
       - chmod +x extensions/{{.EXTENSION}}
       - rm -f extension.zip
       - zip -r extension.zip extensions/
-      - ARN=`aws lambda publish-layer-version --layer-name "grafana-loki-extension" --compatible-runtimes nodejs16.x go1.x python3.9 --zip-file  "fileb://extension.zip" --query "LayerVersionArn" --output text` && echo $ARN
+      - >
+        ARN=`aws lambda publish-layer-version --layer-name "grafana-loki-extension" --compatible-runtimes nodejs16.x go1.x python3.9 --zip-file  "fileb://extension.zip" --query "LayerVersionArn" --output text` && \
+          echo $ARN && \
+          LAYER_VERSION=`echo $ARN | cut -d: -f8` && \
+          echo $LAYER_VERSION && \
+          aws lambda add-layer-version-permission --layer-name "grafana-loki-extension" --version-number $LAYER_VERSION --statement-id "test" --action lambda:GetLayerVersion --principal "*" --organization-id "o-38aomgzvwn" --output text
     silent: false
 
   build:
