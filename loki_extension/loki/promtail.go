@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/afiskon/promtail-client/promtail"
+	"github.com/ITV/promtail-client-1/promtail"
 )
 
 type LogEntry struct {
