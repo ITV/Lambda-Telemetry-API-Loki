@@ -1,7 +1,7 @@
-github.com/ITV/promtail-client-1 v0.0.0-20240612134402-26913bd53ff4 h1:yKyUDd3FXgdCv96y95urb5O8UVx8oFUat+/H9KAmGrI=
-github.com/ITV/promtail-client-1 v0.0.0-20240612134402-26913bd53ff4/go.mod h1:sHaIS1I8USe2evPTw8yNea3oUSklV76sjnBiQX1CzgY=
-github.com/afiskon/promtail-client v0.0.0-20190305142237-506f3f921e9c h1:AMDVOKGaiqse4qiRXSzRgpC9DCNTHCx6zpzdtXXrKM4=
-github.com/afiskon/promtail-client v0.0.0-20190305142237-506f3f921e9c/go.mod h1:p/7Wos+jcfrnwLqqzJMZ0s323kfVtJPW+HUvAANklVQ=
+github.com/ITV/promtail-client-1 v0.0.0-20240613114054-ade2bc567bec h1:HKPLLK0CV4NlPWZmDe1/fPFS8y17v/Wq5TLBjRj4bBw=
+github.com/ITV/promtail-client-1 v0.0.0-20240613114054-ade2bc567bec/go.mod h1:sHaIS1I8USe2evPTw8yNea3oUSklV76sjnBiQX1CzgY=
+github.com/ITV/promtail-client-1 v0.0.0-20240613121915-db48bd16489d h1:+uTgcYZuuDt22V9yvf2fjut9wQnKrSwV6rmUojI2LvE=
+github.com/ITV/promtail-client-1 v0.0.0-20240613121915-db48bd16489d/go.mod h1:sHaIS1I8USe2evPTw8yNea3oUSklV76sjnBiQX1CzgY=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

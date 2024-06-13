@@ -1,6 +1,7 @@
 package loki
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -14,6 +15,7 @@ type LogEntry struct {
 	Record string `json:"record"`
 	Time   string `json:"time"`
 	Type   string `json:"type"`
+	Level  string `json:"level"`
 }
 
 var (
@@ -31,8 +33,6 @@ func init() {
 	sendLabels = []string{"source = lambda"}
 
 	// CP Standard Labels
-	// product := os.Getenv("PRODUCT")     - minimise labels: arguably redundant
-	// ecosystem := os.Getenv("ECOSYSTEM") - minimise labels: arguably redundant
 	environment := os.Getenv("ENVIRONMENT")
 	service := os.Getenv("SERVICE")
 	component := os.Getenv("COMPONENT")
@@ -65,8 +65,6 @@ func init() {
 		Labels:             fmt.Sprintf("{%s}", strings.Join(labels, ",")),
 		BatchWait:          5 * time.Second,
 		BatchEntriesNumber: 10000,
-		SendLevel:          promtail.INFO,
-		PrintLevel:         promtail.ERROR,
 	}
 	loki, err = promtail.NewClientProto(conf)
 	if err != nil {
@@ -76,8 +74,31 @@ func init() {
 }
 
 func LokiSend(record *string) {
-	tstamp := time.Now().String()
-	loki.Infof("{\"@timestamp\": \"%s\", \"message\": \"%v\"}", tstamp, strings.TrimSuffix(*record, "\n"))
+	var logEntry LogEntry
+	level := "INFO"
+	if json.Unmarshal([]byte(*record), &logEntry) == nil {
+		if logEntry.Level != "" {
+			level = logEntry.Level
+		}
+		newLabels := append(labels, fmt.Sprintf("level=\"%s\"", level))
+		conf.Labels = fmt.Sprintf("{%s}", strings.Join(newLabels, ","))
+		loki, err = promtail.NewClientProto(conf)
+		if err != nil {
+			log.Println("Promtail re-init error")
+			log.Println(err)
+			return
+		}
+	} else {
+		newLabels := append(labels, fmt.Sprintf("level=\"%s\"", level))
+		conf.Labels = fmt.Sprintf("{%s}", strings.Join(newLabels, ","))
+		loki, err = promtail.NewClientProto(conf)
+		if err != nil {
+			log.Println("Promtail re-init error")
+			log.Println(err)
+			return
+		}
+	}
+	loki.Infof(strings.TrimSuffix(*record, "\n"))
 }
 
 func LokiShutdown() {
